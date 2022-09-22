@@ -91,6 +91,7 @@ int main() {
     //texture
     unsigned int texture;
     glGenTextures(1, &texture);
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture);
     // 为当前绑定的纹理对象设置环绕、过滤方式
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -113,7 +114,8 @@ int main() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
+    glUseProgram(shader.id());
+    glUniform1i(glGetUniformLocation(shader.id(), "ourTexture"), 1);
 
     while (!glfwWindowShouldClose(window))
     {
