@@ -15,6 +15,7 @@ openglShader::openglShader()
 	int ret = _access(configPath.c_str(), 0);
 	if (ret != 0) {
 		std::cout << configPath << " no exsit " << std::endl;
+		return;
 	}
 	//第一行是顶点着色器的路径，第二行是片段着色器的路径
 	//后期改用json
@@ -97,11 +98,12 @@ static unsigned int  shaderProgram(std::vector<unsigned int > shaderIds) {
 bool openglShader::start()
 {
 	std::cout << "opengl shader start " << std::endl;
+	std::cout << _vertexPath << std::endl;
+	std::cout << _fragPath << std::endl;
 
 	int ret = _access(_vertexPath.c_str(), 0);
 	if (ret != 0) {
-		std::cout << " no exsit  " << _vertexPath << std::endl;
-		perror(" :");
+		std::cout << " no exsit  -" << _vertexPath << "-" << std::endl;
 		return false;
 	}
 	ret = _access(_fragPath.c_str(), 0);
