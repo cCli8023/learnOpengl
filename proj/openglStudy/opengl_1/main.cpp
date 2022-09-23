@@ -17,11 +17,12 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
 float lastX = 400, lastY = 300;
+float fov = 45.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 GLFWwindow* openglVsEnvInit() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -46,7 +47,7 @@ GLFWwindow* openglVsEnvInit() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
-
+    glfwSetScrollCallback(window, scroll_callback);
     return window;
 }
 
@@ -258,6 +259,7 @@ int main() {
         glm::mat4 view;
         //view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
         glUseProgram(shader.id());
         viewLoc = glGetUniformLocation(shader.id(), "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -267,6 +269,8 @@ int main() {
 
         modelLoc = glGetUniformLocation(shader.id(), "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        glUniformMatrix4fv(projectLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
@@ -353,4 +357,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     front.y = sin(glm::radians(pitch));
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(front);
+}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (fov >= 1.0f && fov <= 45.0f)
+        fov -= yoffset;
+    if (fov <= 1.0f)
+        fov = 1.0f;
+    if (fov >= 45.0f)
+        fov = 45.0f;
 }
